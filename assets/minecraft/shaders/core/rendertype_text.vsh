@@ -77,11 +77,6 @@ void main() {
     }
     if(isMap == 1.0 && Position.z == 0.03/* 0.035 */){
         vec2 centerPos = ScrSize / 2.0; //Center of the screen
-        
-        //Scale Img
-        //pos.xy += (centerPos - pos.xy) * 1;
-
-
 
         vec2 tempCoords = vec2(0.0);
         tempCoords = centerPos + dirVector[mapId] * SCALE * guiScale; //Dispatch the maps aound the center of the screen
