@@ -1,12 +1,43 @@
 {
     "providers": [
+        
         {
             "type": "bitmap",
-            "file": "rp:custom/minimap/map_plainshd.png",
+            "file": "rp:custom/map_plains_square_zero.png",
             "ascent": 25,
             "height": 50,
             "chars": [
                 "\uE000"
+            ]
+
+        },
+        {
+            "type": "bitmap",
+            "file": "rp:custom/map_plains_square_one.png",
+            "ascent": 25,
+            "height": 50,
+            "chars": [
+                "\uE001"
+            ]
+
+        },
+        {
+            "type": "bitmap",
+            "file": "rp:custom/map_plains_square_two.png",
+            "ascent": 25,
+            "height": 50,
+            "chars": [
+                "\uE002"
+            ]
+
+        },
+        {
+            "type": "bitmap",
+            "file": "rp:custom/map_plains_square_three.png",
+            "ascent": 25,
+            "height": 50,
+            "chars": [
+                "\uE003"
             ]
 
         }

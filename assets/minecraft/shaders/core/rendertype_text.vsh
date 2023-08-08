@@ -4,7 +4,7 @@
 #moj_import <matrix.glsl>
 
 #define PI 3.141592653
-#define SCALE 0.0
+#define SCALE 50
 //#define RADIUS 100.0 //Uncomment line to set custom radius
 #define MINIMAP_X 50.0 //offest from top right corner
 #define MINIMAP_Y 50.0
@@ -52,18 +52,41 @@ void main() {
     
     ivec2 TexSize = ivec2(textureSize(Sampler0, 0));
     vec3 pos = Position;
+    int mapId = 0;
+    int vertexId = gl_VertexID % 4;
     
     vec4 texture = texelFetch(Sampler2, UV2 / 16, 0);
     vec4 texture_origin = texelFetch(Sampler0, ivec2(TexSize.x - 1, 0), 0);
-    if(texture_origin == vec4(1.0, 1.0, 0.0, 1.0)) isMap = 1.0; //Check if the texture is has a yellow marker (is a map)
+    if(texture_origin.a != 1.0 && texture_origin.a != 0.0) { //Check if the texture is has a yellow marker (is a map)
+        isMap = 1.0;
+        mapId = int(texture_origin.a * 256.0 - 250); //0: top left, 1: top right, 2: bottom left, 3: bottom right
+    }
     
+    //pos.z == 0.0 is the shadow
+    //pos.z == 0.03 is the map
+
+    vec2[4] dirVector = vec2[4](
+        vec2(-1.0, 1.0),
+        vec2(1.0, 1.0),
+        vec2(1.0, -1.0),
+        vec2(-1.0, -1.0)
+    );
+
     if(isMap == 1.0 && Position.z == 0.0) {
         isShadow = 1.0;
-    } else if(isMap == 1.0){
+    }
+    if(isMap == 1.0 && Position.z == 0.03/* 0.035 */){
         vec2 centerPos = ScrSize / 2.0; //Center of the screen
-
+        
         //Scale Img
-        pos.xy += (centerPos - pos.xy) * -SCALE;
+        //pos.xy += (centerPos - pos.xy) * 1;
+
+
+
+        vec2 tempCoords = vec2(0.0);
+        tempCoords = centerPos + dirVector[mapId] * SCALE * guiScale; //Dispatch the maps aound the center of the screen
+        tempCoords += dirVector[vertexId] * SCALE * guiScale; //Dispatch the vertexes around the center of the map
+        pos.xy = tempCoords;
 
         //Rotate Img
         pos.xy -= centerPos; //Translate the image to the origin
@@ -72,15 +95,15 @@ void main() {
         //Move Img
         vec2 MinimapCoord = vec2(ScrSize.x, 0) + vec2(-MinimapSize.x, MinimapSize.y) / guiScale;
         pos.xy += MinimapCoord - centerPos;
-        //radius = min(abs(MinimapCoord.x), abs(MinimapCoord.y));
-        radius = min(abs(MinimapSize.x), abs(MinimapSize.y));
         
-        #ifdef RADIUS //Custom Radius
+        #ifdef RADIUS
             radius = RADIUS;
+        #else
+            //radius = min(abs(MinimapCoord.x), abs(MinimapCoord.y));
+            radius = min(abs(MinimapSize.x), abs(MinimapSize.y));
         #endif
 
         vertexColor = texture;
-
     }
     else vertexColor = Color * texture;
 
