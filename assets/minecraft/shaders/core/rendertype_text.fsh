@@ -2,6 +2,8 @@
 
 #moj_import <fog.glsl>
 
+#define BORDER_RADIUS 2.0
+
 uniform sampler2D Sampler0;
 
 uniform vec4 ColorModulator;
@@ -18,12 +20,12 @@ in float isMap;
 in float isShadow;
 in float radius;
 in vec2 MinimapSize;
-in vec2 MinimapPos;
+flat in int guiScale;
 
 out vec4 fragColor;
 
-bool dist(vec2 a, vec2 b) {
-    return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2)) < 40;
+bool circle(float radius){
+    return distance(gl_FragCoord.xy, ScreenSize - MinimapSize) > radius && isMap == 1.0;
 }
 
 void main() {
@@ -33,21 +35,6 @@ void main() {
 
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
 
-    if (distance(gl_FragCoord.xy, ScreenSize - MinimapSize) > radius && isMap == 1.0) {
-        discard;
-        //fragColor = vec4( 0.996078431372549 ,  0.00392156862745098 ,  0.49411764705882355 , 1.0);
-    }
-
-    /* if (distance(gl_FragCoord.xy, MinimapPos) < radius && isMap == 1.0) {
-        //discard;
-        fragColor = vec4( 0.996078431372549 ,  0.00392156862745098 ,  0.49411764705882355 , 1.0);
-    } */
-
-    //if(gl_FragCoord.x == MinimapPosOut.x) fragColor = vec4(0.83, 0.0, 1.0, 1.0);
-
-
-
-    //fragColor = (gl_FragCoord.x, gl_FragCoord.y, 0.0, 1.0);
-
-    
+    if (circle(radius - BORDER_RADIUS * guiScale)) fragColor = vec4(0.3, 0.3, 0.3, 1.0);
+    if (circle(radius)) discard;
 }
