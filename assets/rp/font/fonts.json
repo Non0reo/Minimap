@@ -1,0 +1,14 @@
+{
+    "providers": [
+        {
+            "type": "bitmap",
+            "file": "rp:custom/minimap/map_plainshd.png",
+            "ascent": 25,
+            "height": 50,
+            "chars": [
+                "\uE000"
+            ]
+
+        }
+    ]
+}
