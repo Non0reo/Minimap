@@ -72,6 +72,8 @@ void main() {
         vec2(-1.0, -1.0)
     );
 
+    vec4 tempColor = vec4(0.0);
+
     if(isMap == 1.0 && Position.z == 0.0) {
         isShadow = 1.0;
         vertexColor = texture;
@@ -88,17 +90,18 @@ void main() {
 
         vec3 color = Color.rgb;
         //r*2^16+g*2^8+b
-        float colorCode = (pow(color.r * 2, 16) + pow(color.g * 2, 8) + color.b);
-        vec2 worldPosition = vec2(mod((colorCode / 512), 512)0.0, 0.0mod(colorCode, 512)) / 128 - 2.0; ///INFO: "/ 128 - 2.0" permet de restraindre la valeur entre -2 et 2 je crois, à vérifier
-
+        int colorCode = int(pow(color.r * 255 * 2, 16) + pow(color.g * 255 * 2, 8) + color.b * 255);
+        vec2 worldPosition = vec2(mod((colorCode / 512), 512), mod(colorCode, 512)) / 128 - 2.0; ///INFO: "/ 128 - 2.0" permet de restraindre la valeur entre -2 et 2 et la soustrait de 2 pour mettre le 0,0 en haut a gauche
+        //worldPosition : x,z
         /*         
-            INPORTANT : 
+            ///INPORTANT : 
             La minimap se déplace dans l'intervale -2 et 2 sur les deux axes
 
             Exemples :
             //worldPosition = vec2(-2.0, -2.0); //Coin supérieur gauche
             //worldPosition = vec2(0.0, 0.0); //Centre
         */
+        //tempColor = vec4(worldPosition, 0.0, 1.0);
 
         //Rotate Img
         pos.xy -= centerPos; //Translate the image to the origin
@@ -108,6 +111,7 @@ void main() {
         //Move Img
         vec2 MinimapCoord = vec2(ScrSize.x, 0) + vec2(-MinimapSize.x, MinimapSize.y) / guiScale;
         //pos.xy += MinimapCoord - centerPos;
+        ///INFO: Activer la ligne du dessus pour positionner la minimap en haut a droite
         
         #ifdef RADIUS
             radius = RADIUS;
