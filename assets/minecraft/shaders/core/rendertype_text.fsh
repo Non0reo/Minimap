@@ -35,10 +35,10 @@ void main() {
 
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
 
-    if (circle(radius - BORDER_RADIUS * guiScale)) fragColor = vec4(0.3, 0.3, 0.3, 1.0);
-    if (circle(radius)) discard;
+    // if (circle(radius - BORDER_RADIUS * guiScale)) fragColor = vec4(0.3, 0.3, 0.3, 1.0);
+    // if (circle(radius)) discard;
 
     ///TODO: Remplacer par une custom font
-    if (distance(gl_FragCoord.xy, ScreenSize - MinimapSize) < 20 && isMap == 1.0) fragColor = vec4(0.93, 0.0, 1.0, 1.0);
+    if (distance(gl_FragCoord.xy, ScreenSize - MinimapSize) < 2 * guiScale && isMap == 1.0) fragColor = vec4(0.49, 0.45, 0.29, 1.0);
     
 }
