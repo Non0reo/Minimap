@@ -87,29 +87,12 @@ void main() {
         tempCoords += dirVector[vertexId] * SCALE * guiScale; //Dispatch the vertexes around the center of the map
         pos.xy = tempCoords;
 
-        //pos.xy += vec2(512.0, 0) /* / 2.0 */;
-
-        // vec3 color = Color.rgb;
-        //r*2^16+g*2^8+b
         // Convertir les composantes de couleur en entiers normalisés (0-255)
-        int r = int(Color.r * 255.0);
-        int g = int(Color.g * 255.0);
-        int b = int(Color.b * 255.0);
+        ivec3 color = int(Color.rgb * 255);
 
         // Empaqueter les composantes de couleur en un seul entier (format RGB sur 1 int)
-        float rgbValue = (r << 16) | (g << 8) | b;
-
-        vec2 worldPosition = vec2(mod((rgbValue / PRECISION), PRECISION), mod(rgbValue, PRECISION)) / (PRECISION/4) - 2.0; ///INFO: "/ 128 - 2.0" permet de restraindre la permet de restraindre la valeur entre -2 et 2 et la soustrait de 2 pour mettre le 0,0 en haut a gauche
-        //worldPosition : x,z
-        /*         
-            ///INPORTANT : 
-            La minimap se déplace dans l'intervale -2 et 2 sur les deux axes
-
-            Exemples :
-            //worldPosition = vec2(-2.0, -2.0); //Coin supérieur gauche
-            //worldPosition = vec2(0.0, 0.0); //Centre
-        */
-        //tempColor = vec4(worldPosition, 0.0, 1.0);
+        float rgbValue = (color.r << 16) | (color.g << 8) | color.b;
+        vec2 worldPosition = vec2(mod((rgbValue / PRECISION), PRECISION), mod(rgbValue, PRECISION)) / (PRECISION / 4) - 2.0;
 
         //Rotate Img
         pos.xy -= centerPos; //Translate the image to the origin
@@ -119,7 +102,6 @@ void main() {
         //Move Img
         vec2 MinimapCoord = vec2(ScrSize.x, 0) + vec2(-MinimapSize.x, MinimapSize.y) / guiScale;
         pos.xy += MinimapCoord - centerPos;
-        ///INFO: Activer la ligne du dessus pour positionner la minimap en haut a droite
         
         #ifdef RADIUS
             radius = RADIUS;
@@ -127,7 +109,8 @@ void main() {
             //radius = min(abs(MinimapCoord.x), abs(MinimapCoord.y));
             radius = min(abs(MinimapSize.x), abs(MinimapSize.y));
         #endif
-        vertexColor = (1,1,1,1) * texture;
+
+        vertexColor = texture;
     }
     else vertexColor = Color * texture;
 
