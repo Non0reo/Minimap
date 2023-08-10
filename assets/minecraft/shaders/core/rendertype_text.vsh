@@ -5,9 +5,9 @@
 
 #define PI 3.141592653
 #define SCALE 50 //Also the size of the map divided by 2
-//#define RADIUS 100.0 //Uncomment line to set custom radius
-#define MINIMAP_X 50.0 //offest from top right corner
-#define MINIMAP_Y 50.0
+#define MINIMAP_OFFSET_X 15.0 //offest from right corner
+#define MINIMAP_OFFSET_Y 15.0 //offest from top right corner
+#define MINIMAP_SIZE 50.0// Map Size
 #define PRECISION 512
 
 in vec3 Position;
@@ -47,7 +47,7 @@ void main() {
     float playerYaw = atan(IViewRotMat[0].z, IViewRotMat[0].x);
 
     guiScale = getGuiScale(ProjMat, ScreenSize);
-    MinimapSize = vec2(MINIMAP_X, MINIMAP_Y) * guiScale;
+    MinimapSize = vec2(MINIMAP_SIZE + MINIMAP_OFFSET_X, MINIMAP_SIZE + MINIMAP_OFFSET_Y) * guiScale;
     isMap = 0.0;
     isShadow = 0.0;
     
@@ -88,7 +88,7 @@ void main() {
         pos.xy = tempCoords;
 
         // Convertir les composantes de couleur en entiers normalisés (0-255)
-        ivec3 color = int(Color.rgb * 255);
+        ivec3 color = ivec3(Color.rgb * 255.0);
 
         // Empaqueter les composantes de couleur en un seul entier (format RGB sur 1 int)
         float rgbValue = (color.r << 16) | (color.g << 8) | color.b;
@@ -102,13 +102,7 @@ void main() {
         //Move Img
         vec2 MinimapCoord = vec2(ScrSize.x, 0) + vec2(-MinimapSize.x, MinimapSize.y) / guiScale;
         pos.xy += MinimapCoord - centerPos;
-        
-        #ifdef RADIUS
-            radius = RADIUS;
-        #else
-            //radius = min(abs(MinimapCoord.x), abs(MinimapCoord.y));
-            radius = min(abs(MinimapSize.x), abs(MinimapSize.y));
-        #endif
+        radius = min(abs(MinimapSize.x) - MINIMAP_OFFSET_X, abs(MinimapSize.y) - MINIMAP_OFFSET_Y);      
 
         vertexColor = texture;
     }
