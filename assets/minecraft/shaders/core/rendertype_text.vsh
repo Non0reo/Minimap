@@ -5,7 +5,8 @@
 
 #define PI 3.141592653
 #define SCALE 50 //Also the size of the map divided by 2
-#define MINIMAP_OFFSET 15.0 //offest from top right corner
+#define MINIMAP_OFFSET_X 15.0 //offest from right corner
+#define MINIMAP_OFFSET_Y 15.0 //offest from top right corner
 #define MINIMAP_SIZE 50.0// Map Size
 #define PRECISION 512
 
@@ -46,7 +47,7 @@ void main() {
     float playerYaw = atan(IViewRotMat[0].z, IViewRotMat[0].x);
 
     guiScale = getGuiScale(ProjMat, ScreenSize);
-    MinimapSize = vec2(MINIMAP_SIZE + MINIMAP_OFFSET) * guiScale;
+    MinimapSize = vec2(MINIMAP_SIZE + MINIMAP_OFFSET_X, MINIMAP_SIZE + MINIMAP_OFFSET_Y) * guiScale;
     isMap = 0.0;
     isShadow = 0.0;
     
@@ -101,7 +102,7 @@ void main() {
         //Move Img
         vec2 MinimapCoord = vec2(ScrSize.x, 0) + vec2(-MinimapSize.x, MinimapSize.y) / guiScale;
         pos.xy += MinimapCoord - centerPos;
-        radius = min(abs(MinimapSize.x) - MINIMAP_OFFSET, abs(MinimapSize.y) - MINIMAP_OFFSET);      
+        radius = min(abs(MinimapSize.x) - MINIMAP_OFFSET_X, abs(MinimapSize.y) - MINIMAP_OFFSET_Y);      
 
         vertexColor = texture;
     }
