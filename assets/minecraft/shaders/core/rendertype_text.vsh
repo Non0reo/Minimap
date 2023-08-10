@@ -8,6 +8,7 @@
 //#define RADIUS 100.0 //Uncomment line to set custom radius
 #define MINIMAP_X 50.0 //offest from top right corner
 #define MINIMAP_Y 50.0
+#define PRECISION 512
 
 in vec3 Position;
 in vec4 Color;
@@ -88,10 +89,17 @@ void main() {
 
         //pos.xy += vec2(512.0, 0) /* / 2.0 */;
 
-        vec3 color = Color.rgb;
+        // vec3 color = Color.rgb;
         //r*2^16+g*2^8+b
-        int colorCode = int(pow(color.r * 255 * 2, 16) + pow(color.g * 255 * 2, 8) + color.b * 255);
-        vec2 worldPosition = vec2(mod((colorCode / 512), 512), mod(colorCode, 512)) / 128 - 2.0; ///INFO: "/ 128 - 2.0" permet de restraindre la valeur entre -2 et 2 et la soustrait de 2 pour mettre le 0,0 en haut a gauche
+        // Convertir les composantes de couleur en entiers normalisés (0-255)
+        int r = int(Color.r * 255.0);
+        int g = int(Color.g * 255.0);
+        int b = int(Color.b * 255.0);
+
+        // Empaqueter les composantes de couleur en un seul entier (format RGB sur 1 int)
+        float rgbValue = (r << 16) | (g << 8) | b;
+
+        vec2 worldPosition = vec2(mod((rgbValue / PRECISION), PRECISION), mod(rgbValue, PRECISION)) / (PRECISION/4) - 2.0; ///INFO: "/ 128 - 2.0" permet de restraindre la permet de restraindre la valeur entre -2 et 2 et la soustrait de 2 pour mettre le 0,0 en haut a gauche
         //worldPosition : x,z
         /*         
             ///INPORTANT : 
@@ -110,7 +118,7 @@ void main() {
 
         //Move Img
         vec2 MinimapCoord = vec2(ScrSize.x, 0) + vec2(-MinimapSize.x, MinimapSize.y) / guiScale;
-        //pos.xy += MinimapCoord - centerPos;
+        pos.xy += MinimapCoord - centerPos;
         ///INFO: Activer la ligne du dessus pour positionner la minimap en haut a droite
         
         #ifdef RADIUS
@@ -119,8 +127,7 @@ void main() {
             //radius = min(abs(MinimapCoord.x), abs(MinimapCoord.y));
             radius = min(abs(MinimapSize.x), abs(MinimapSize.y));
         #endif
-
-        vertexColor = Color * texture;
+        vertexColor = (1,1,1,1) * texture;
     }
     else vertexColor = Color * texture;
 
