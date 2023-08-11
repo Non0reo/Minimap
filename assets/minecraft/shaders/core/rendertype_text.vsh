@@ -5,9 +5,9 @@
 
 #define PI 3.141592653
 #define SCALE 50 //Also the size of the map divided by 2
-#define MINIMAP_OFFSET_X 15.0 //offest from right corner
-#define MINIMAP_OFFSET_Y 15.0 //offest from top right corner
-#define MINIMAP_SIZE 50.0// Map Size
+#define MINIMAP_OFFSET_X 15.0 //Offset from top right corner
+#define MINIMAP_OFFSET_Y 15.0
+#define MINIMAP_SIZE 50.0 //Map Size
 #define PRECISION 512
 
 in vec3 Position;
@@ -58,7 +58,7 @@ void main() {
     
     vec4 texture = texelFetch(Sampler2, UV2 / 16, 0);
     vec4 texture_origin = texelFetch(Sampler0, ivec2(TexSize.x - 1, 0), 0);
-    if(texture_origin.a != 1.0 && texture_origin.a != 0.0) { //Check if the texture is has a yellow marker (is a map)
+    if(texture_origin.a != 1.0 && texture_origin.a != 0.0) { //Check if the texture is has a marker (is a map)
         isMap = 1.0;
         mapId = int(texture_origin.a * 256.0 - 250); //0: top left, 1: top right, 2: bottom left, 3: bottom right
     }
@@ -73,13 +73,11 @@ void main() {
         vec2(-1.0, -1.0)
     );
 
-    vec4 tempColor = vec4(0.0);
-
     if(isMap == 1.0 && Position.z == 0.0) {
         isShadow = 1.0;
         vertexColor = texture;
     }
-    if(isMap == 1.0 && Position.z == 0.03/* 0.035 */){
+    if(isMap == 1.0 && Position.z == 0.03){
         vec2 centerPos = ScrSize / 2.0; //Center of the screen
 
         vec2 tempCoords = vec2(0.0);
