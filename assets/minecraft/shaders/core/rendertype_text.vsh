@@ -4,10 +4,11 @@
 #moj_import <matrix.glsl>
 
 #define PI 3.141592653
-#define SCALE 50
-//#define RADIUS 100.0 //Uncomment line to set custom radius
-#define MINIMAP_X 50.0 //offest from top right corner
-#define MINIMAP_Y 50.0
+#define SCALE 10 //Also the size of the map divided by 2
+#define MINIMAP_OFFSET_X 15.0 //Offset from top right corner
+#define MINIMAP_OFFSET_Y 15.0
+#define MINIMAP_SIZE 50.0 //Map Size
+#define PRECISION 4096
 
 in vec3 Position;
 in vec4 Color;
@@ -35,6 +36,7 @@ out vec2 MinimapSize;
 flat out int guiScale;
 
 vec2 ScrSize = ceil(2 / vec2(ProjMat[0][0], -ProjMat[1][1]));
+vec2 centerPos = ScrSize / 2.0;
 
 //From McTsts
 int getGuiScale(mat4 ProjMat, vec2 ScreenSize) {
@@ -42,11 +44,10 @@ int getGuiScale(mat4 ProjMat, vec2 ScreenSize) {
 }
 
 void main() {
-    float time = GameTime * 1000;
     float playerYaw = atan(IViewRotMat[0].z, IViewRotMat[0].x);
 
     guiScale = getGuiScale(ProjMat, ScreenSize);
-    MinimapSize = vec2(MINIMAP_X, MINIMAP_Y) * guiScale;
+    MinimapSize = vec2(MINIMAP_SIZE + MINIMAP_OFFSET_X, MINIMAP_SIZE + MINIMAP_OFFSET_Y) * guiScale;
     isMap = 0.0;
     isShadow = 0.0;
     
@@ -56,10 +57,10 @@ void main() {
     int vertexId = gl_VertexID % 4;
     
     vec4 texture = texelFetch(Sampler2, UV2 / 16, 0);
-    vec4 texture_origin = texelFetch(Sampler0, ivec2(TexSize.x - 1, 0), 0);
-    if(texture_origin.a != 1.0 && texture_origin.a != 0.0) { //Check if the texture is has a yellow marker (is a map)
+    vec4 texture_marker = texelFetch(Sampler0, ivec2(TexSize.x - 1, 0), 0);
+    if(texture_marker.a != 1.0 && texture_marker.a != 0.0) { //Check if the texture is has a marker (is a map)
         isMap = 1.0;
-        mapId = int(texture_origin.a * 256.0 - 250); //0: top left, 1: top right, 2: bottom left, 3: bottom right
+        mapId = int(texture_marker.a * 256.0 - 250); //0: top_left, 1: bottom_left, 2: bottom_right, 3: top_right
     }
     
     //pos.z == 0.0 is the shadow
@@ -74,29 +75,25 @@ void main() {
 
     if(isMap == 1.0 && Position.z == 0.0) {
         isShadow = 1.0;
+        vertexColor = texture;
     }
-    if(isMap == 1.0 && Position.z == 0.03/* 0.035 */){
-        vec2 centerPos = ScrSize / 2.0; //Center of the screen
+    if(isMap == 1.0 && Position.z == 0.03){
+        pos.xy = centerPos + (dirVector[mapId] + dirVector[vertexId]) * SCALE * guiScale; //Dispatch the maps aound the center of the screen
 
-        vec2 tempCoords = vec2(0.0);
-        tempCoords = centerPos + dirVector[mapId] * SCALE * guiScale; //Dispatch the maps aound the center of the screen
-        tempCoords += dirVector[vertexId] * SCALE * guiScale; //Dispatch the vertexes around the center of the map
-        pos.xy = tempCoords;
+        // Empaqueter les composantes de couleur en un seul entier (format RGB sur 1 int)
+        ivec3 color = ivec3(Color.rgb * 255.0);
+        float rgbValue = (color.r << 16) | (color.g << 8) | color.b;
+        vec2 worldPosition = vec2(mod((rgbValue / PRECISION), PRECISION), mod(rgbValue, PRECISION)) / (PRECISION / 4) - 2.0;
 
         //Rotate Img
         pos.xy -= centerPos; //Translate the image to the origin
-        pos.xy = mat2_rotate_z(playerYaw) * pos.xy + centerPos; // Rotate the image around 0,0 and set the image back to the center
+        pos.xy = mat2_rotate_z(playerYaw + PI * -0.5) * pos.xy + mat2_rotate_z(playerYaw) * SCALE * -worldPosition * guiScale + centerPos;
+        // Rotate the image around 0,0 ; Add an offset from 0,0 thank to the color (player pos) ; and set the image back to the center
 
         //Move Img
         vec2 MinimapCoord = vec2(ScrSize.x, 0) + vec2(-MinimapSize.x, MinimapSize.y) / guiScale;
         pos.xy += MinimapCoord - centerPos;
-        
-        #ifdef RADIUS
-            radius = RADIUS;
-        #else
-            //radius = min(abs(MinimapCoord.x), abs(MinimapCoord.y));
-            radius = min(abs(MinimapSize.x), abs(MinimapSize.y));
-        #endif
+        radius = min(abs(MinimapSize.x) - MINIMAP_OFFSET_X, abs(MinimapSize.y) - MINIMAP_OFFSET_Y);      
 
         vertexColor = texture;
     }

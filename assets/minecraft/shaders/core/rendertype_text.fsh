@@ -3,6 +3,7 @@
 #moj_import <fog.glsl>
 
 #define BORDER_RADIUS 2.0
+#define CURSOR_SIZE 2.5
 
 uniform sampler2D Sampler0;
 
@@ -28,6 +29,11 @@ bool circle(float radius){
     return distance(gl_FragCoord.xy, ScreenSize - MinimapSize) > radius && isMap == 1.0;
 }
 
+bool triangle(in vec2 pixelCoord, vec2 basePos){
+    vec2 gap = pixelCoord - basePos;
+    return abs(gap.x * CURSOR_SIZE) < -gap.y + CURSOR_SIZE * guiScale && pixelCoord.y > basePos.y - CURSOR_SIZE * guiScale;
+}
+
 void main() {
     vec4 color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
     if (color.a < 0.1) discard;
@@ -39,6 +45,6 @@ void main() {
     if (circle(radius)) discard;
 
     ///TODO: Remplacer par une custom font
-    if (distance(gl_FragCoord.xy, ScreenSize - MinimapSize) < 20 && isMap == 1.0) fragColor = vec4(0.93, 0.0, 1.0, 1.0);
-    
+    if(triangle(gl_FragCoord.xy, ScreenSize - MinimapSize)) fragColor = vec4(1.0, 1.0, 0.0, 1.0);
+
 }

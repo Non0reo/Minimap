@@ -40,6 +40,48 @@
                 "\uE003"
             ]
 
+        },
+
+
+        {
+            "type": "bitmap",
+            "file": "rp:custom/map_world_zero.png",
+            "ascent": 25,
+            "height": 50,
+            "chars": [
+                "\uE010"
+            ]
+
+        },
+        {
+            "type": "bitmap",
+            "file": "rp:custom/map_world_one.png",
+            "ascent": 25,
+            "height": 50,
+            "chars": [
+                "\uE011"
+            ]
+
+        },
+        {
+            "type": "bitmap",
+            "file": "rp:custom/map_world_two.png",
+            "ascent": 25,
+            "height": 50,
+            "chars": [
+                "\uE012"
+            ]
+
+        },
+        {
+            "type": "bitmap",
+            "file": "rp:custom/map_world_three.png",
+            "ascent": 25,
+            "height": 50,
+            "chars": [
+                "\uE013"
+            ]
+
         }
     ]
 }
