@@ -85,13 +85,6 @@ void main() {
         float rgbValue = (color.r << 16) | (color.g << 8) | color.b;
         vec2 worldPosition = vec2(mod((rgbValue / PRECISION), PRECISION), mod(rgbValue, PRECISION)) / (PRECISION / 4) - 2.0;
 
-        // Convertir les composantes de couleur en entiers normalisés (0-255)
-        ivec3 color = ivec3(Color.rgb * 255.0);
-
-        // Empaqueter les composantes de couleur en un seul entier (format RGB sur 1 int)
-        float rgbValue = (color.r << 16) | (color.g << 8) | color.b;
-        vec2 worldPosition = vec2(mod((rgbValue / PRECISION), PRECISION), mod(rgbValue, PRECISION)) / (PRECISION / 4) - 2.0;
-
         //Rotate Img
         pos.xy -= centerPos; //Translate the image to the origin
         pos.xy = mat2_rotate_z(playerYaw + PI * -0.5) * pos.xy + mat2_rotate_z(playerYaw) * SCALE * -worldPosition * guiScale + centerPos;
